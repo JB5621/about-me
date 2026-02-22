@@ -104,7 +104,7 @@ function updateActiveNavLink() {
 // ============================================
 // Typing Effect
 // ============================================
-const words = ['Front-End Developer', 'React Specialist', 'UI/UX Enthusiast', 'Problem Solver'];
+const words = ['Junior Front-End Developer', 'React Learner', 'UI/UX Enthusiast', 'Problem Solver'];
 let wordIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
