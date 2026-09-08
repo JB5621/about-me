@@ -630,6 +630,45 @@
         </div>
     </footer>
 
+    <!-- Ask-About-Me bot -->
+    <button class="chat-launcher" id="chat-launcher" aria-label="Ask about Jemshit"
+            aria-expanded="false" aria-controls="chat-panel">
+        <i class="fas fa-comment-dots icon-chat"></i>
+        <i class="fas fa-xmark icon-close"></i>
+        <span class="chat-ping" aria-hidden="true"></span>
+    </button>
+
+    <div class="chat-panel" id="chat-panel" role="dialog" aria-labelledby="chat-title" hidden>
+        <div class="chat-head">
+            <span class="chat-avatar">
+                <img src="207410472.jpg" alt="" width="40" height="40">
+                <span class="chat-online" aria-hidden="true"></span>
+            </span>
+            <span class="chat-head-text">
+                <strong id="chat-title">Ask about Jemshit</strong>
+                <small id="chat-status">Usually replies instantly</small>
+            </span>
+            <button class="chat-icon-btn" id="chat-reset" aria-label="Clear the conversation">
+                <i class="fas fa-rotate-left"></i>
+            </button>
+            <button class="chat-icon-btn" id="chat-close" aria-label="Close chat">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="chat-log" id="chat-log" role="log" aria-live="polite"></div>
+
+        <div class="chat-chips" id="chat-chips"></div>
+
+        <form class="chat-form" id="chat-form" autocomplete="off">
+            <input type="text" id="chat-input" placeholder="Ask about skills, projects, contact…"
+                   aria-label="Ask about skills, projects, contact" maxlength="200">
+            <button type="submit" class="chat-send" id="chat-send" aria-label="Send">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
     <!-- Back to Top Button -->
     <button class="back-to-top" id="back-to-top" data-i18n-aria="a11y.top" aria-label="Back to top">
         <i class="fas fa-arrow-up"></i>
@@ -637,5 +676,6 @@
 
     <script src="i18n.js"></script>
     <script src="script.js"></script>
+    <script src="chatbot.js"></script>
 </body>
 </html>
