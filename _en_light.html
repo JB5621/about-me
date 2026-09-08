@@ -12,7 +12,7 @@
         // Applied before first paint so the page never flashes the wrong theme
         (function () {
             try {
-                var t = localStorage.getItem('theme');
+                var t = 'light';
                 if (t !== 'light' && t !== 'dark') t = 'dark';
                 document.documentElement.setAttribute('data-theme', t);
                 var l = localStorage.getItem('lang');
@@ -24,7 +24,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+<style>.loader{display:none!important}</style></head>
 <body>
     <!-- Loader -->
     <div class="loader" id="loader">
@@ -74,8 +74,6 @@
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-bg">
-            <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
-            <div class="hero-floor" aria-hidden="true"></div>
             <div class="floating-shapes">
                 <div class="shape shape-1"></div>
                 <div class="shape shape-2"></div>
@@ -122,21 +120,11 @@
                 </div>
             </div>
             <div class="hero-image animate-image">
-                <div class="image-wrapper tilt" data-tilt="10" data-tilt-scale="1.02">
+                <div class="image-wrapper">
                     <div class="image-border"></div>
-                    <div class="orbit" aria-hidden="true">
-                        <span class="orbit-ring orbit-ring--a"></span>
-                        <span class="orbit-ring orbit-ring--b"></span>
-                        <span class="orbit-dot orbit-dot--a"></span>
-                        <span class="orbit-dot orbit-dot--b"></span>
-                    </div>
                     <div class="profile-placeholder">
                         <img src="207410472.jpg" alt="Portrait of Jemshit Berdinyyazow" width="360" height="360">
                     </div>
-                    <span class="tilt-glare" aria-hidden="true"></span>
-                    <div class="float-chip float-chip--1" aria-hidden="true"><i class="fab fa-react"></i></div>
-                    <div class="float-chip float-chip--2" aria-hidden="true"><i class="fab fa-js"></i></div>
-                    <div class="float-chip float-chip--3" aria-hidden="true"><i class="fab fa-css3-alt"></i></div>
                 </div>
             </div>
         </div>
@@ -155,21 +143,10 @@
             </div>
             <div class="about-content">
                 <div class="about-image reveal-left">
-                    <div class="image-card tilt" data-tilt="9">
+                    <div class="image-card">
                         <div class="image-placeholder">
-                            <div class="cube-stage" aria-hidden="true">
-                                <div class="cube">
-                                    <div class="cube-face cube-face--front"><i class="fab fa-html5"></i></div>
-                                    <div class="cube-face cube-face--back"><i class="fab fa-css3-alt"></i></div>
-                                    <div class="cube-face cube-face--right"><i class="fab fa-js"></i></div>
-                                    <div class="cube-face cube-face--left"><i class="fab fa-react"></i></div>
-                                    <div class="cube-face cube-face--top"><i class="fab fa-git-alt"></i></div>
-                                    <div class="cube-face cube-face--bottom"><i class="fab fa-node-js"></i></div>
-                                </div>
-                                <div class="cube-floor"></div>
-                            </div>
+                            <i class="fas fa-code"></i>
                         </div>
-                        <span class="tilt-glare" aria-hidden="true"></span>
                         <div class="experience-badge">
                             <span class="years">1+</span>
                             <span class="text" data-i18n="about.badge">Years Experience</span>
@@ -386,7 +363,7 @@
                 <button class="filter-btn" data-filter="ui" data-i18n="projects.ui">UI/UX</button>
             </div>
             <div class="projects-grid">
-                <div class="project-card reveal-up tilt" data-tilt="8" data-category="web">
+                <div class="project-card reveal-up" data-category="web">
                     <div class="project-image">
                         <div class="project-placeholder">
                             <i class="fas fa-shopping-cart"></i>
@@ -402,7 +379,6 @@
                             </div>
                         </div>
                     </div>
-                    <span class="tilt-glare" aria-hidden="true"></span>
                     <div class="project-info">
                         <h3 class="project-title" data-i18n="projects.p1.title">E-Commerce Platform</h3>
                         <p class="project-description" data-i18n="projects.p1.text">Full-featured online store with cart, checkout, and payment integration.</p>
@@ -414,7 +390,7 @@
                     </div>
                 </div>
 
-                <div class="project-card reveal-up tilt" data-tilt="8" data-category="web">
+                <div class="project-card reveal-up" data-category="web">
                     <div class="project-image">
                         <div class="project-placeholder">
                             <i class="fas fa-tasks"></i>
@@ -430,7 +406,6 @@
                             </div>
                         </div>
                     </div>
-                    <span class="tilt-glare" aria-hidden="true"></span>
                     <div class="project-info">
                         <h3 class="project-title" data-i18n="projects.p2.title">Task Management App</h3>
                         <p class="project-description" data-i18n="projects.p2.text">Collaborative task manager with real-time updates and drag-drop.</p>
@@ -441,7 +416,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card reveal-up tilt" data-tilt="8" data-category="ui">
+                <div class="project-card reveal-up" data-category="ui">
                     <div class="project-image">
                         <div class="project-placeholder">
                             <i class="fas fa-mobile-alt"></i>
@@ -457,7 +432,6 @@
                             </div>
                         </div>
                     </div>
-                    <span class="tilt-glare" aria-hidden="true"></span>
                     <div class="project-info">
                         <h3 class="project-title" data-i18n="projects.p3.title">Finance Dashboard</h3>
                         <p class="project-description" data-i18n="projects.p3.text">Interactive dashboard with charts and data visualization.</p>
@@ -468,7 +442,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card reveal-up tilt" data-tilt="8" data-category="landing">
+                <div class="project-card reveal-up" data-category="landing">
                     <div class="project-image">
                         <div class="project-placeholder">
                             <i class="fas fa-utensils"></i>
@@ -484,7 +458,6 @@
                             </div>
                         </div>
                     </div>
-                    <span class="tilt-glare" aria-hidden="true"></span>
                     <div class="project-info">
                         <h3 class="project-title" data-i18n="projects.p4.title">Restaurant Website</h3>
                         <p class="project-description" data-i18n="projects.p4.text">Elegant restaurant site with menu, reservations, and gallery.</p>
@@ -495,7 +468,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="project-card reveal-up tilt" data-tilt="8" data-category="ui">
+                <div class="project-card reveal-up" data-category="ui">
                     <div class="project-image">
                         <div class="project-placeholder">
                             <i class="fas fa-palette"></i>
@@ -511,7 +484,6 @@
                             </div>
                         </div>
                     </div>
-                    <span class="tilt-glare" aria-hidden="true"></span>
                     <div class="project-info">
                         <h3 class="project-title" data-i18n="projects.p5.title">Design System</h3>
                         <p class="project-description" data-i18n="projects.p5.text">Comprehensive UI component library with documentation.</p>
@@ -637,5 +609,5 @@
 
     <script src="i18n.js"></script>
     <script src="script.js"></script>
-</body>
+<script>window.addEventListener('load',function(){applyLang('en',false);});</script></body>
 </html>

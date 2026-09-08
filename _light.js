@@ -327,9 +327,9 @@ document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right').forEach(el 
 });
 
 // ============================================
-// Cursor Spotlight
+// Tilt Effect for Project Cards
 // ============================================
-// A light that follows the cursor across a panel.
+// A soft 3D tilt plus a light that follows the cursor.
 function trackSpotlight(el) {
     el.addEventListener('mousemove', (e) => {
         const rect = el.getBoundingClientRect();
@@ -340,234 +340,24 @@ function trackSpotlight(el) {
 
 skillsCategories.forEach(trackSpotlight);
 
-projectCards.forEach(trackSpotlight);
+projectCards.forEach(card => {
+    trackSpotlight(card);
 
-// ============================================
-// 3D Tilt Engine
-// ============================================
-// Anything marked .tilt gets a real perspective tilt. JS only writes
-// CSS variables, so the stylesheet stays in charge of the actual look.
-const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (reduceMotion) return;
 
-function attachTilt(el) {
-    const max = parseFloat(el.dataset.tilt) || 8;
-    const scale = parseFloat(el.dataset.tiltScale) || 0;
-    let frame = null;
-    let px = 0.5, py = 0.5;
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -7;
+        const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * 7;
 
-    function render() {
-        frame = null;
-        el.style.setProperty('--rx', `${(0.5 - py) * 2 * max}deg`);
-        el.style.setProperty('--ry', `${(px - 0.5) * 2 * max}deg`);
-    }
-
-    el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        px = x / rect.width;
-        py = y / rect.height;
-        el.style.setProperty('--mx', `${x}px`);
-        el.style.setProperty('--my', `${y}px`);
-        if (frame === null) frame = requestAnimationFrame(render);
+        card.style.transform =
+            `perspective(1100px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
     });
 
-    el.addEventListener('mouseenter', () => {
-        el.classList.add('is-tilting');
-        if (scale) el.style.setProperty('--ts', scale);
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
     });
-
-    el.addEventListener('mouseleave', () => {
-        el.classList.remove('is-tilting');
-        if (frame !== null) { cancelAnimationFrame(frame); frame = null; }
-        el.style.setProperty('--rx', '0deg');
-        el.style.setProperty('--ry', '0deg');
-        el.style.removeProperty('--ts');
-    });
-}
-
-if (!reduceMotion && finePointer) {
-    document.querySelectorAll('.tilt[data-tilt]').forEach(attachTilt);
-}
-
-// ============================================
-// Hero Depth Field
-// ============================================
-// A few hundred points scattered through a 3D box, projected onto the
-// canvas with a real focal length. They drift toward the viewer and the
-// nearest ones get linked, so the field reads as volume rather than dots.
-function initDepthField() {
-    const canvas = document.getElementById('hero-canvas');
-    const hero = document.querySelector('.hero');
-    if (!canvas || !hero || reduceMotion) return;
-
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
-
-    const FOCAL = 620;
-    const DEPTH = 1400;
-    let w = 0, h = 0, dpr = 1;
-    let points = [];
-    let frame = null;
-    let visible = true;
-    let hue = { r: 34, g: 211, b: 238 };
-
-    // aim = where the cursor is pulling the field; eye eases toward it
-    const aim = { x: 0, y: 0 };
-    const eye = { x: 0, y: 0 };
-
-    function readTheme() {
-        hue = document.documentElement.getAttribute('data-theme') === 'light'
-            ? { r: 8, g: 145, b: 178 }
-            : { r: 34, g: 211, b: 238 };
-    }
-
-    function seed() {
-        const count = Math.round(Math.min(150, Math.max(50, w / 11)));
-        points = [];
-        for (let i = 0; i < count; i++) {
-            points.push({
-                x: (Math.random() - 0.5) * w * 1.8,
-                y: (Math.random() - 0.5) * h * 1.8,
-                z: Math.random() * DEPTH + 60,
-                r: Math.random() * 1.4 + 0.6,
-                v: Math.random() * 0.5 + 0.25
-            });
-        }
-    }
-
-    function resize() {
-        const rect = hero.getBoundingClientRect();
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
-        w = Math.round(rect.width);
-        h = Math.round(rect.height);
-        canvas.width = Math.round(w * dpr);
-        canvas.height = Math.round(h * dpr);
-        canvas.style.width = w + 'px';
-        canvas.style.height = h + 'px';
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        seed();
-    }
-
-    function draw() {
-        frame = null;
-        ctx.clearRect(0, 0, w, h);
-
-        eye.x += (aim.x - eye.x) * 0.04;
-        eye.y += (aim.y - eye.y) * 0.04;
-
-        const cx = w / 2;
-        const cy = h / 2;
-        const screen = [];
-
-        for (const p of points) {
-            p.z -= p.v;
-            if (p.z < 40) {
-                p.z = DEPTH;
-                p.x = (Math.random() - 0.5) * w * 1.8;
-                p.y = (Math.random() - 0.5) * h * 1.8;
-            }
-
-            const k = FOCAL / p.z;
-            const sx = cx + (p.x + eye.x * p.z * 0.12) * k;
-            const sy = cy + (p.y + eye.y * p.z * 0.12) * k;
-            if (sx < -60 || sx > w + 60 || sy < -60 || sy > h + 60) continue;
-
-            // near points are bigger and brighter; far ones fade into the aurora
-            const depth = 1 - p.z / DEPTH;
-            const alpha = 0.12 + depth * 0.6;
-            const size = Math.max(0.4, p.r * k * 1.6);
-
-            screen.push({ x: sx, y: sy, a: alpha });
-
-            ctx.beginPath();
-            ctx.arc(sx, sy, size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${hue.r},${hue.g},${hue.b},${alpha})`;
-            ctx.fill();
-        }
-
-        // link the close ones — the mesh is what sells the depth
-        ctx.lineWidth = 1;
-        for (let i = 0; i < screen.length; i++) {
-            for (let j = i + 1; j < screen.length; j++) {
-                const dx = screen[i].x - screen[j].x;
-                const dy = screen[i].y - screen[j].y;
-                const d2 = dx * dx + dy * dy;
-                if (d2 > 16900) continue; // 130px
-                const fade = (1 - Math.sqrt(d2) / 130) * 0.22 *
-                             Math.min(screen[i].a, screen[j].a) * 2;
-                ctx.strokeStyle = `rgba(${hue.r},${hue.g},${hue.b},${fade})`;
-                ctx.beginPath();
-                ctx.moveTo(screen[i].x, screen[i].y);
-                ctx.lineTo(screen[j].x, screen[j].y);
-                ctx.stroke();
-            }
-        }
-
-        if (visible && !document.hidden) frame = requestAnimationFrame(draw);
-    }
-
-    function start() {
-        if (frame === null && visible && !document.hidden) frame = requestAnimationFrame(draw);
-    }
-
-    function stop() {
-        if (frame !== null) { cancelAnimationFrame(frame); frame = null; }
-    }
-
-    readTheme();
-    resize();
-    start();
-
-    window.addEventListener('resize', debounce(resize, 160));
-    window.addEventListener('load', resize); // fonts landing can change the hero height
-    document.addEventListener('visibilitychange', () => { document.hidden ? stop() : start(); });
-
-    document.addEventListener('mousemove', (e) => {
-        aim.x = (e.clientX / window.innerWidth - 0.5) * 2;
-        aim.y = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
-
-    // stop burning frames once the hero has scrolled away
-    if ('IntersectionObserver' in window) {
-        new IntersectionObserver((entries) => {
-            visible = entries[0].isIntersecting;
-            visible ? start() : stop();
-        }, { threshold: 0 }).observe(hero);
-    }
-
-    // the field is tinted from the active theme, so follow the toggle
-    new MutationObserver(readTheme).observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['data-theme']
-    });
-}
-
-initDepthField();
-
-// ============================================
-// Hero Scroll Depth
-// ============================================
-// The hero sinks back into the page as you scroll past it.
-(function heroDepth() {
-    const content = document.querySelector('.hero-content');
-    if (!content || reduceMotion) return;
-
-    let ticking = false;
-
-    function apply() {
-        ticking = false;
-        const y = window.scrollY;
-        if (y > window.innerHeight) return;
-        const p = Math.min(y / window.innerHeight, 1);
-        content.style.transform = `perspective(1200px) translateY(${p * 60}px) scale(${1 - p * 0.06})`;
-        content.style.opacity = `${1 - p * 0.85}`;
-    }
-
-    window.addEventListener('scroll', () => {
-        if (!ticking) { ticking = true; requestAnimationFrame(apply); }
-    }, { passive: true });
-})();
+});
 
 // ============================================
 // Magnetic Button Effect
@@ -739,7 +529,7 @@ window.addEventListener('resize', debounce(() => {
     let savedTheme = 'dark';
     let savedLang = 'en';
     try {
-        savedTheme = localStorage.getItem('theme') === 'light' ? 'light' : 'dark';
+        savedTheme = 'light';
         const stored = localStorage.getItem('lang');
         if (TRANSLATIONS[stored]) savedLang = stored;
     } catch (e) {}
